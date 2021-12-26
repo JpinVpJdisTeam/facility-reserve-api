@@ -1,4 +1,4 @@
-# RaiseTech Memo API
+# Facility Reserve API
 
 ```
 node -v
@@ -8,13 +8,13 @@ v14.16.0
 ## 環境構築
 
 ```
-git clone https://github.com/reach-script/raisetech-memo-api.git
-cd raisetech-memo-api
+git clone https://github.com/JpinVpJdisTeam/facility-reserve-api.git
+cd facility-reserve-api
 yarn install
 yarn dev
 ```
 
-## API Test
+## API Test（下記は今後の予定）
 
 [Thunder Client](https://www.thunderclient.io/)
 
@@ -24,12 +24,12 @@ VACode の拡張 Thunder Client を install
 
 - Collections へ import
 
-  [thunder-collection_raisetech-memo-api.json](./docs/thunder-collection_raisetech-memo-api.json)
+  [thunder-collection_facility-reserve-api.json](./docs/thunder-facility-reserve-api.json)
 
 - ENV へ import
 
-  [thunder-environment_raisetech-memo-api-dev.json](./docs/thunder-environment_raisetech-memo-api-dev.json)
+  [thunder-environment_facility-reserve-api.json](./docs/thunder-environment_facility-reserve-api.json)
 
-## Deploy
+## Deploy（下記は今後の予定）
 
 [Heroku](https://dashboard.heroku.com/apps)
