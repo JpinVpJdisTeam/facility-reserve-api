@@ -13,7 +13,7 @@ export default router(
     jwtAuth(async (req) => {
       const { id } = req.jwt;
       const { data: memos, error } = await client
-        .from('memo')
+        .from('memo-old')
         .select('id,title,category,description,date,mark_div')
         .eq('user_id', id);
       if (error) {
@@ -37,7 +37,7 @@ export default router(
           return;
         }
 
-        const { data, error } = await client.from('memo').insert([{ user_id: id, ...memo }]);
+        const { data, error } = await client.from('memo-old').insert([{ user_id: id, ...memo }]);
         if (error) {
           console.info('error', error);
           throw internalServerError(error.message);
@@ -70,7 +70,7 @@ export default router(
         data: [currentMemo],
         error: getError,
       } = await client
-        .from('memo')
+        .from('memo-old')
         .select('id,title,category,description,date,mark_div')
         .eq('user_id', userId)
         .eq('id', id);
@@ -95,7 +95,7 @@ export default router(
         return;
       }
 
-      const { data, error } = await client.from('memo').update(memo).eq('id', id).eq('user_id', userId);
+      const { data, error } = await client.from('memo-old').update(memo).eq('id', id).eq('user_id', userId);
       console.info(data, error);
 
       if (error) {
@@ -124,7 +124,7 @@ export default router(
         data: [currentMemo],
         error: getError,
       } = await client
-        .from('memo')
+        .from('memo-old')
         .select('id,title,category,description,date,mark_div')
         .eq('user_id', userId)
         .eq('id', id);
@@ -138,7 +138,7 @@ export default router(
         return;
       }
 
-      const { data, error } = await client.from('memo').delete().eq('id', id).eq('user_id', userId);
+      const { data, error } = await client.from('memo-old').delete().eq('id', id).eq('user_id', userId);
 
       if (error) {
         throw internalServerError();
