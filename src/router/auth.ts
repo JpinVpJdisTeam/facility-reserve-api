@@ -9,10 +9,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export default router(
   post('/api/login', async (req, res) => {
     const data = await json(req);
-    const { email, password } = data;
+    const { employee_id: employeeId, password } = data;
 
     // TODO パスワードの暗号化とかセキュアな方法調査(?)
-    const { data: users } = await client.from('user-old').select('*').eq('email', email);
+    const { data: users } = await client.from('user').select('*').eq('employee_id', employeeId);
+    console.info(users);
 
     if (users.length === 0) {
       send(res, 401, {
@@ -35,6 +36,37 @@ export default router(
 
     return { access_token: token };
   }),
+  post('/api/logout', async () => {
+    return { message: 'logout' };
+  }),
+  // post('/api/login', async (req, res) => {
+  //   const data = await json(req);
+  //   const { email, password } = data;
+
+  //   // TODO パスワードの暗号化とかセキュアな方法調査(?)
+  //   const { data: users } = await client.from('user-old').select('*').eq('email', email);
+
+  //   if (users.length === 0) {
+  //     send(res, 401, {
+  //       message: 'unauthorized',
+  //     });
+  //     return;
+  //   }
+  //   const user = users[0];
+
+  //   if (user.password !== password) {
+  //     send(res, 401, {
+  //       message: 'unauthorized',
+  //     });
+  //     return;
+  //   }
+
+  //   const token = sign({ id: user.id }, JWT_SECRET, {
+  //     expiresIn: `${process.env.TOKEN_EXPIRED_HOUR}h`,
+  //   });
+
+  //   return { access_token: token };
+  // }),
   post('/api/logout', async () => {
     return { message: 'logout' };
   }),
