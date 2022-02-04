@@ -1,22 +1,36 @@
 import { json, send } from 'micro';
-// import { post, router } from 'microrouter';
 import { sign } from 'jsonwebtoken';
 import { client } from '../libs/db/client';
-// import { json, send } from 'micro';
 import { get, post, del, router, put } from 'microrouter';
 import { internalServerError } from '../error';
-// import { client } from '../libs/db/client';
 import { jwtAuth } from '../utils';
 import { validate } from '../utils/validation';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const INVALID_ID = 'IDが不正です';
+
 export default router(
+  get(
+    '/api/account/:id',
+    jwtAuth(async (req) => {
+      const { id } = req.params;
+      const { data: account, error } = await client
+        .from('account')
+        .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
+        .eq('employee_id', id);
+      if (error) {
+        console.log(error);
+        throw internalServerError(error.message);
+      }
+
+      return { ...account[0] };
+    }),
+  ),
   post(
     '/api/account',
     jwtAuth(async (req, res) => {
       try {
-        const { id } = req.jwt;
         const account = await json(req);
         const valid = validate(account);
         if (!valid) {
@@ -24,7 +38,7 @@ export default router(
           send(res, 400, { message });
           return;
         }
-        const { data, error } = await client.from('account').insert([{ employee_id: id, ...account }]);
+        const { data, error } = await client.from('account').insert([{ ...account }]);
         if (error) {
           console.info('error', error);
           throw internalServerError(error.message);
@@ -33,76 +47,106 @@ export default router(
           throw internalServerError();
         }
 
-        const insertedAccount = data[0];
-        delete insertedAccount.user_id;
+        const insertedAccount = data;
 
-        return { ...insertedAccount, id: insertedAccount.id.toString() };
+        return { ...insertedAccount };
       } catch (error) {
         throw internalServerError(error.message);
       }
     }),
   ),
+  put(
+    '/api/account/:id',
+    jwtAuth(async (req, res) => {
+      const { id: employeeId } = req.params;
 
-  // post(
-  //   '/api/memo',
-  //   jwtAuth(async (req, res) => {
-  //     try {
-  //       const { id } = req.jwt;
-  //       const memo = await json(req);
-  //       const valid = validate(memo);
-  //       if (!valid) {
-  //         const message = validate.errors.map((item) => item.message);
-  //         send(res, 400, { message });
-  //         return;
-  //       }
+      const message: Array<string> = [];
+      if (!employeeId) {
+        message.push(INVALID_ID);
+      }
 
-  //       const { data, error } = await client.from('memo-old').insert([{ user_id: id, ...memo }]);
-  //       if (error) {
-  //         console.info('error', error);
-  //         throw internalServerError(error.message);
-  //       }
-  //       if (data.length == 0) {
-  //         throw internalServerError();
-  //       }
+      const {
+        data: [currentAccount],
+        error: getError,
+      } = await client
+        .from('account')
+        .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
+        .eq('employee_id', employeeId);
 
-  //       const insertedMemo = data[0];
-  //       delete insertedMemo.user_id;
+      if (getError) {
+        throw internalServerError();
+      }
 
-  //       return { ...insertedMemo, id: insertedMemo.id.toString() };
-  //     } catch (error) {
-  //       throw internalServerError(error.message);
-  //     }
-  //   }),
-  // ),
-  // post('/api/login', async (req, res) => {
-  //   const data = await json(req);
-  //   const { email, password } = data;
+      console.log('test');
 
-  //   // TODO パスワードの暗号化とかセキュアな方法調査(?)
-  //   const { data: users } = await client.from('user-old').select('*').eq('email', email);
+      if (!currentAccount) {
+        send(res, 400, { message: 'IDが不正です' });
+        return;
+      }
 
-  //   if (users.length === 0) {
-  //     send(res, 401, {
-  //       message: 'unauthorized',
-  //     });
-  //     return;
-  //   }
-  //   const user = users[0];
+      const account = await json(req);
+      const valid = validate(account);
+      if (!valid) {
+        message.push(...validate.errors.map((item) => item.message));
+      }
 
-  //   if (user.password !== password) {
-  //     send(res, 401, {
-  //       message: 'unauthorized',
-  //     });
-  //     return;
-  //   }
+      if (message.length > 0) {
+        send(res, 400, { message });
+        return;
+      }
 
-  //   const token = sign({ id: user.id }, JWT_SECRET, {
-  //     expiresIn: `${process.env.TOKEN_EXPIRED_HOUR}h`,
-  //   });
+      const { data, error } = await client.from('account').update(account).eq('employee_id', employeeId);
+      console.info(data, error);
 
-  //   return { access_token: token };
-  // }),
-  // post('/api/logout', async () => {
-  //   return { message: 'logout' };
-  // }),
+      if (error) {
+        throw internalServerError();
+      }
+      if (data.length === 0) {
+        throw internalServerError();
+      }
+
+      const updatedAccount = data[0];
+      delete updatedAccount.user_id;
+
+      return { ...updatedAccount, id: updatedAccount.id.toString() };
+    }),
+  ),
+  del(
+    '/api/account/:id',
+    jwtAuth(async (req, res) => {
+      const { id: employeeId } = req.params;
+      if (!employeeId) {
+        return { message: [INVALID_ID] };
+      }
+
+      const {
+        data: [currentAccount],
+        error: getError,
+      } = await client
+        .from('account')
+        .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
+        .eq('employee_id', employeeId);
+
+      if (getError) {
+        throw internalServerError();
+      }
+
+      if (!currentAccount) {
+        send(res, 400, { message: 'IDが不正です' });
+        return;
+      }
+
+      const { data, error } = await client.from('account').delete().eq('employee_id', employeeId);
+
+      if (error) {
+        throw internalServerError();
+      }
+      if (data.length === 0) {
+        throw internalServerError();
+      }
+
+      const deletedAccount = data[0];
+      return { ...deletedAccount };
+    }),
+  ),
 );
