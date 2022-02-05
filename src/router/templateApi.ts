@@ -10,6 +10,7 @@ dotenv.config();
 
 const INVALID_ID = 'IDが不正です';
 
+// TODO: router を登録
 export default router(
   // TODO: xxxをAPI名に入れ替え
   get(
