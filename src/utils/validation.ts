@@ -68,4 +68,25 @@ const schema = {
   },
 };
 
+const facilitySchema = {
+  type: 'object',
+  properties: {
+    hub_id: {
+      type: 'integer',
+      description: '拠点ID',
+    },
+  },
+  required: ['hub_id'],
+  additionalProperties: false,
+  errorMessage: {
+    required: {
+      hub_id: '拠点IDは必須です',
+    },
+    properties: {
+      hub_id: '拠点IDは必須です',
+    },
+  },
+};
+
 export const validate = ajv.compile(schema);
+export const facilityValidate = ajv.compile(facilitySchema);
