@@ -12,7 +12,7 @@ ajv.addFormat('custom-date', (str) => {
   return valid;
 });
 
-const schema = {
+const accountSchema = {
   type: 'object',
   properties: {
     employee_id: {
@@ -178,6 +178,29 @@ const reservationSchema = {
   },
 };
 
-export const validate = ajv.compile(schema);
+const departmentSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      description: '部署名',
+    },
+    hub_id: {
+      type: 'integer',
+      description: '拠点ID',
+    },
+  },
+  required: ['name', 'hub_id'],
+  additionalProperties: false,
+  errorMessage: {
+    required: {
+      name: '部署名は必須です',
+      hub_id: '拠点IDは必須です',
+    },
+  },
+};
+
+export const validate = ajv.compile(accountSchema);
 export const facilityValidate = ajv.compile(facilitySchema);
 export const reservationValidate = ajv.compile(reservationSchema);
+export const departmentValidate = ajv.compile(departmentSchema);

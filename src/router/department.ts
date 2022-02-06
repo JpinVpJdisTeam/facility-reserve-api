@@ -4,48 +4,38 @@ import { client } from '../libs/db/client';
 import { get, post, del, router, put } from 'microrouter';
 import { internalServerError } from '../error';
 import { jwtAuth } from '../utils';
-import { validate } from '../utils/validation';
+import { departmentValidate } from '../utils/validation';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const INVALID_ID = 'IDが不正です';
 
-// TODO: validation を定義
-// TODO: validate をリネーム
-// TODO: router を登録
-// TODO: xxx を リネーム
-// TODO: Xxx を リネーム
-// TODO: SQL を修正
-// TODO: リクエストパラメータを修正
 export default router(
   get(
-    '/api/xxx/:id',
+    '/api/department/:id',
     jwtAuth(async (req) => {
       const { id } = req.params;
-      const { data: xxx, error } = await client
-        .from('xxx')
-        .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
-        .eq('id', id);
+      const { data: department, error } = await client.from('department').select('name, hub_id').eq('id', id);
       if (error) {
         console.log(error);
         throw internalServerError(error.message);
       }
 
-      return { ...xxx[0] };
+      return { ...department[0] };
     }),
   ),
   post(
-    '/api/xxx',
+    '/api/department',
     jwtAuth(async (req, res) => {
       try {
-        const xxx = await json(req);
-        const valid = validate(xxx);
+        const department = await json(req);
+        const valid = departmentValidate(department);
         if (!valid) {
-          const message = validate.errors.map((item) => item.message);
+          const message = departmentValidate.errors.map((item) => item.message);
           send(res, 400, { message });
           return;
         }
-        const { data, error } = await client.from('xxx').insert([{ ...xxx }]);
+        const { data, error } = await client.from('department').insert([{ ...department }]);
         if (error) {
           console.info('error', error);
           throw internalServerError(error.message);
@@ -54,16 +44,16 @@ export default router(
           throw internalServerError();
         }
 
-        const insertedXxx = data;
+        const insertedDepartment = data;
 
-        return { ...insertedXxx };
+        return { ...insertedDepartment };
       } catch (error) {
         throw internalServerError(error.message);
       }
     }),
   ),
   put(
-    '/api/xxx/:id',
+    '/api/department/:id',
     jwtAuth(async (req, res) => {
       const { id: id } = req.params;
 
@@ -73,26 +63,23 @@ export default router(
       }
 
       const {
-        data: [currentXxx],
+        data: [currentDepartment],
         error: getError,
-      } = await client
-        .from('xxx')
-        .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
-        .eq('id', id);
+      } = await client.from('department').select('name, hub_id').eq('id', id);
 
       if (getError) {
         throw internalServerError();
       }
 
-      if (!currentXxx) {
+      if (!currentDepartment) {
         send(res, 400, { message: 'IDが不正です' });
         return;
       }
 
-      const xxx = await json(req);
-      const valid = validate(xxx);
+      const department = await json(req);
+      const valid = departmentValidate(department);
       if (!valid) {
-        message.push(...validate.errors.map((item) => item.message));
+        message.push(...departmentValidate.errors.map((item) => item.message));
       }
 
       if (message.length > 0) {
@@ -100,7 +87,7 @@ export default router(
         return;
       }
 
-      const { data, error } = await client.from('xxx').update(xxx).eq('id', id);
+      const { data, error } = await client.from('department').update(department).eq('id', id);
       console.info(data, error);
 
       if (error) {
@@ -110,14 +97,14 @@ export default router(
         throw internalServerError();
       }
 
-      const updatedXxx = data[0];
-      delete updatedXxx.user_id;
+      const updatedDepartment = data[0];
+      delete updatedDepartment.user_id;
 
-      return { ...updatedXxx, id: updatedXxx.id.toString() };
+      return { ...updatedDepartment, id: updatedDepartment.id.toString() };
     }),
   ),
   del(
-    '/api/xxx/:id',
+    '/api/department/:id',
     jwtAuth(async (req, res) => {
       const { id: id } = req.params;
       if (!id) {
@@ -125,23 +112,20 @@ export default router(
       }
 
       const {
-        data: [currentXxx],
+        data: [currentDepartment],
         error: getError,
-      } = await client
-        .from('xxx')
-        .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
-        .eq('id', id);
+      } = await client.from('department').select('name, hub_id').eq('id', id);
 
       if (getError) {
         throw internalServerError();
       }
 
-      if (!currentXxx) {
+      if (!currentDepartment) {
         send(res, 400, { message: 'IDが不正です' });
         return;
       }
 
-      const { data, error } = await client.from('xxx').delete().eq('id', id);
+      const { data, error } = await client.from('department').delete().eq('id', id);
 
       if (error) {
         throw internalServerError();
@@ -150,8 +134,8 @@ export default router(
         throw internalServerError();
       }
 
-      const deletedXxx = data[0];
-      return { ...deletedXxx };
+      const deletedDepartment = data[0];
+      return { ...deletedDepartment };
     }),
   ),
 );

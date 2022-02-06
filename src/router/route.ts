@@ -6,7 +6,10 @@ import accountRouter from './account';
 import hubRouter from './hub';
 import facilityRouter from './facility';
 import reservationRouter from './reservation';
+import departmentRouter from './department';
 
 const cors = microCors();
 
-export const route = cors(router(authRouter, memoRouter, accountRouter, hubRouter, facilityRouter, reservationRouter));
+export const route = cors(
+  router(authRouter, memoRouter, accountRouter, hubRouter, facilityRouter, reservationRouter, departmentRouter),
+);
