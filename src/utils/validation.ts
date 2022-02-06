@@ -71,22 +71,113 @@ const schema = {
 const facilitySchema = {
   type: 'object',
   properties: {
+    name: {
+      type: 'string',
+      description: '施設名',
+    },
     hub_id: {
       type: 'integer',
       description: '拠点ID',
     },
+    hourly_fees: {
+      type: 'integer',
+      description: '１時間当たりの利用料金',
+    },
+    reservable_timezone_star_ttime: {
+      type: 'string',
+      format: 'time',
+      description: '予約可能時間帯開始時刻',
+    },
+    reservable_timezone_end_time: {
+      type: 'integer',
+      format: 'time',
+      description: '予約可能時間帯終了時刻',
+    },
+    continuous_avairable_time: {
+      type: 'string',
+      format: 'time',
+      description: '連続利用可能時間',
+    },
   },
-  required: ['hub_id'],
+  required: [
+    'name',
+    'hub_id',
+    'hourly_fees',
+    'reservable_timezone_star_ttime',
+    'reservable_timezone_end_time',
+    'continuous_avairable_time',
+  ],
   additionalProperties: false,
   errorMessage: {
     required: {
+      name: '施設名は必須です',
       hub_id: '拠点IDは必須です',
+      hourly_fees: '１時間当たりの利用料金は必須です',
+      reservable_timezone_star_ttime: '予約可能時間帯開始時刻は必須です',
+      reservable_timezone_end_time: '予約可能時間帯終了時刻は必須です',
+      continuous_avairable_time: '連続利用可能時間は必須です',
     },
-    properties: {
-      hub_id: '拠点IDは必須です',
+  },
+};
+
+const reservationSchema = {
+  type: 'object',
+  properties: {
+    facility_id: {
+      type: 'integer',
+      description: '施設ID',
+    },
+    title: {
+      type: 'string',
+      description: 'タイトル',
+    },
+    reservation_person_id: {
+      type: 'integer',
+      description: '予約者ID',
+    },
+    tel: {
+      type: 'string',
+      description: '予約者電話番号',
+    },
+    usage_date: {
+      type: 'string',
+      format: 'date',
+      description: '予約日',
+    },
+    start_time: {
+      type: 'string',
+      format: 'time',
+      description: '予約開始時間',
+    },
+    end_time: {
+      type: 'string',
+      format: 'time',
+      description: '予約終了時間',
+    },
+    is_private: {
+      type: 'boolean',
+      description: '非公開有無',
+    },
+    remarks: {
+      type: 'string',
+      description: '備考',
+    },
+  },
+  required: ['facility_id', 'title', 'reservation_person_id', 'tel', 'usage_date', 'start_time', 'end_time'],
+  additionalProperties: false,
+  errorMessage: {
+    required: {
+      facility_id: '施設IDは必須です',
+      title: 'タイトルは必須です',
+      reservation_person_id: '予約者は必須です',
+      tel: '電話番号は必須です',
+      usage_date: '予約日は必須です',
+      start_time: '予約開始時間は必須です',
+      end_time: '予約終了時間は必須です',
     },
   },
 };
 
 export const validate = ajv.compile(schema);
 export const facilityValidate = ajv.compile(facilitySchema);
+export const reservationValidate = ajv.compile(reservationSchema);

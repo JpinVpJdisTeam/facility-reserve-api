@@ -27,6 +27,18 @@ export default router(
       return { ...account[0] };
     }),
   ),
+  get(
+    '/api/account',
+    jwtAuth(async (req) => {
+      const { data: account, error } = await client.from('account').select('*');
+      if (error) {
+        console.log(error);
+        throw internalServerError(error.message);
+      }
+
+      return { ...account };
+    }),
+  ),
   post(
     '/api/account',
     jwtAuth(async (req, res) => {
