@@ -1,5 +1,4 @@
 import { json, send } from 'micro';
-import { sign } from 'jsonwebtoken';
 import { client } from '../libs/db/client';
 import { get, post, del, router, put } from 'microrouter';
 import { internalServerError } from '../error';
@@ -14,16 +13,17 @@ const INVALID_ID = 'IDが不正です';
 // TODO: validate をリネーム
 // TODO: router を登録
 // TODO: xxx を リネーム
+// TODO: x_x を リネーム
 // TODO: Xxx を リネーム
 // TODO: SQL を修正
 // TODO: リクエストパラメータを修正
 export default router(
   get(
-    '/api/xxx/:id',
+    '/api/x_x/:id',
     jwtAuth(async (req) => {
       const { id } = req.params;
       const { data: xxx, error } = await client
-        .from('xxx')
+        .from('x_x')
         .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
         .eq('id', id);
       if (error) {
@@ -35,7 +35,7 @@ export default router(
     }),
   ),
   post(
-    '/api/xxx',
+    '/api/x_x',
     jwtAuth(async (req, res) => {
       try {
         const xxx = await json(req);
@@ -45,7 +45,7 @@ export default router(
           send(res, 400, { message });
           return;
         }
-        const { data, error } = await client.from('xxx').insert([{ ...xxx }]);
+        const { data, error } = await client.from('x_x').insert([{ ...xxx }]);
         if (error) {
           console.info('error', error);
           throw internalServerError(error.message);
@@ -63,7 +63,7 @@ export default router(
     }),
   ),
   put(
-    '/api/xxx/:id',
+    '/api/x_x/:id',
     jwtAuth(async (req, res) => {
       const { id: id } = req.params;
 
@@ -76,7 +76,7 @@ export default router(
         data: [currentXxx],
         error: getError,
       } = await client
-        .from('xxx')
+        .from('x_x')
         .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
         .eq('id', id);
 
@@ -100,7 +100,7 @@ export default router(
         return;
       }
 
-      const { data, error } = await client.from('xxx').update(xxx).eq('id', id);
+      const { data, error } = await client.from('x_x').update(xxx).eq('id', id);
       console.info(data, error);
 
       if (error) {
@@ -117,7 +117,7 @@ export default router(
     }),
   ),
   del(
-    '/api/xxx/:id',
+    '/api/x_x/:id',
     jwtAuth(async (req, res) => {
       const { id: id } = req.params;
       if (!id) {
@@ -128,7 +128,7 @@ export default router(
         data: [currentXxx],
         error: getError,
       } = await client
-        .from('xxx')
+        .from('x_x')
         .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
         .eq('id', id);
 
@@ -141,7 +141,7 @@ export default router(
         return;
       }
 
-      const { data, error } = await client.from('xxx').delete().eq('id', id);
+      const { data, error } = await client.from('x_x').delete().eq('id', id);
 
       if (error) {
         throw internalServerError();
