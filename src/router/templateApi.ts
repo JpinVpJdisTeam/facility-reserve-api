@@ -10,18 +10,22 @@ dotenv.config();
 
 const INVALID_ID = 'IDが不正です';
 
+// TODO: validation を定義
+// TODO: validate をリネーム
 // TODO: router を登録
+// TODO: xxx を リネーム
+// TODO: Xxx を リネーム
+// TODO: SQL を修正
+// TODO: リクエストパラメータを修正
 export default router(
-  // TODO: xxxをAPI名に入れ替え
   get(
     '/api/xxx/:id',
     jwtAuth(async (req) => {
       const { id } = req.params;
-      // TODO 取得カラムを設定
       const { data: xxx, error } = await client
         .from('xxx')
         .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
-        .eq('employee_id', id);
+        .eq('id', id);
       if (error) {
         console.log(error);
         throw internalServerError(error.message);
@@ -30,7 +34,6 @@ export default router(
       return { ...xxx[0] };
     }),
   ),
-  // TODO: xxxをAPI名に入れ替え
   post(
     '/api/xxx',
     jwtAuth(async (req, res) => {
@@ -38,7 +41,6 @@ export default router(
         const xxx = await json(req);
         const valid = validate(xxx);
         if (!valid) {
-          // TODO valication を実装
           const message = validate.errors.map((item) => item.message);
           send(res, 400, { message });
           return;
@@ -60,39 +62,33 @@ export default router(
       }
     }),
   ),
-  // TODO: xxxをAPI名に入れ替え
   put(
     '/api/xxx/:id',
     jwtAuth(async (req, res) => {
-      // TODO id を設定
-      const { id: employeeId } = req.params;
+      const { id: id } = req.params;
 
       const message: Array<string> = [];
-      if (!employeeId) {
+      if (!id) {
         message.push(INVALID_ID);
       }
 
-      // TODO 検索対象を設定
       const {
         data: [currentAccount],
         error: getError,
       } = await client
         .from('account')
         .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
-        .eq('employee_id', employeeId);
+        .eq('id', id);
 
       if (getError) {
         throw internalServerError();
       }
-
-      console.log('test');
 
       if (!currentAccount) {
         send(res, 400, { message: 'IDが不正です' });
         return;
       }
 
-      // TODO valication を設定
       const xxx = await json(req);
       const valid = validate(xxx);
       if (!valid) {
@@ -104,10 +100,7 @@ export default router(
         return;
       }
 
-      // TODO テーブル名を設定
-      // TODO update 対象を設定
-      // TODO id を設定
-      const { data, error } = await client.from('xxx').update(xxx).eq('employee_id', employeeId);
+      const { data, error } = await client.from('xxx').update(xxx).eq('id', id);
       console.info(data, error);
 
       if (error) {
@@ -126,20 +119,18 @@ export default router(
   del(
     '/api/xxx/:id',
     jwtAuth(async (req, res) => {
-      const { id: employeeId } = req.params;
-      if (!employeeId) {
+      const { id: id } = req.params;
+      if (!id) {
         return { message: [INVALID_ID] };
       }
 
-      // TODO 検索対象を設定
-      // TODO id を設定
       const {
         data: [currentAccount],
         error: getError,
       } = await client
         .from('xxx')
         .select('employee_id, name, furigana, hub_id, department_id, tel, email, role_id')
-        .eq('employee_id', employeeId);
+        .eq('id', id);
 
       if (getError) {
         throw internalServerError();
@@ -150,9 +141,7 @@ export default router(
         return;
       }
 
-      // TODO テーブル名を設定
-      // TODO id を設定
-      const { data, error } = await client.from('xxx').delete().eq('employee_id', employeeId);
+      const { data, error } = await client.from('xxx').delete().eq('id', id);
 
       if (error) {
         throw internalServerError();
