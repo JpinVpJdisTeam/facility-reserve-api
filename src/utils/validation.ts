@@ -200,7 +200,47 @@ const departmentSchema = {
   },
 };
 
+const usageFeeSchema = {
+  type: 'object',
+  properties: {
+    facility_id: {
+      type: 'integer',
+      description: '施設ID',
+    },
+    reservation_person_id: {
+      type: 'integer',
+      description: '予約者ID',
+    },
+    date: {
+      type: 'string',
+      format: 'date',
+      description: '予約日',
+    },
+    time: {
+      type: 'string',
+      format: 'time',
+      description: '利用時間',
+    },
+    fee: {
+      type: 'integer',
+      description: '利用料金',
+    },
+  },
+  required: ['facility_id', 'reservation_person_id', 'date', 'time', 'fee'],
+  additionalProperties: false,
+  errorMessage: {
+    required: {
+      facility_id: '施設IDは必須です',
+      reservation_person_id: '予約者IDは必須です',
+      date: '予約日は必須です',
+      time: '利用時間は必須です',
+      fee: '利用料金は必須です',
+    },
+  },
+};
+
 export const validate = ajv.compile(accountSchema);
 export const facilityValidate = ajv.compile(facilitySchema);
 export const reservationValidate = ajv.compile(reservationSchema);
 export const departmentValidate = ajv.compile(departmentSchema);
+export const usageFeeValidate = ajv.compile(usageFeeSchema);
