@@ -9,7 +9,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const INVALID_ID = 'IDが不正です';
-
 export default router(
   get(
     '/api/account/:id',

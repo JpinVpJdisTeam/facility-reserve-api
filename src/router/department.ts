@@ -12,10 +12,13 @@ const INVALID_ID = 'IDが不正です';
 
 export default router(
   get(
-    '/api/department/:id',
+    '/api/department/:hub_id',
     jwtAuth(async (req) => {
-      const { id } = req.params;
-      const { data: department, error } = await client.from('department').select('name, hub_id').eq('id', id);
+      const { hub_id } = req.params;
+      const { data: department, error } = await client
+        .from('department')
+        .select('id, name, hub_id')
+        .eq('hub_id', hub_id);
       if (error) {
         console.log(error);
         throw internalServerError(error.message);
@@ -65,7 +68,7 @@ export default router(
       const {
         data: [currentDepartment],
         error: getError,
-      } = await client.from('department').select('name, hub_id').eq('id', id);
+      } = await client.from('department').select('id, name, hub_id').eq('id', id);
 
       if (getError) {
         throw internalServerError();
@@ -114,7 +117,7 @@ export default router(
       const {
         data: [currentDepartment],
         error: getError,
-      } = await client.from('department').select('name, hub_id').eq('id', id);
+      } = await client.from('department').select('id, name, hub_id').eq('id', id);
 
       if (getError) {
         throw internalServerError();
