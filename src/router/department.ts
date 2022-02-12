@@ -24,7 +24,7 @@ export default router(
         throw internalServerError(error.message);
       }
 
-      return { ...department[0] };
+      return { ...department };
     }),
   ),
   post(
