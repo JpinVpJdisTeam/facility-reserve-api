@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json, send } from 'micro';
 import { client } from '../libs/db/client';
 import { get, post, del, router, put } from 'microrouter';
@@ -24,6 +25,45 @@ export default router(
       }
 
       return { ...usageFee[0] };
+    }),
+  ),
+  post(
+    '/api/usage_fee_month',
+    jwtAuth(async (req, res) => {
+      try {
+        const { month, day, department_id } = await json(req);
+        // const valid = usageFeeValidate(usageFee);
+        // if (!valid) {
+        //   const message = usageFeeValidate.errors.map((item) => item.message);
+        //   send(res, 400, { message });
+        //   return;
+        // }
+        if (month === null || day === null || department_id === null) {
+          return;
+        }
+
+        const data = await client
+          .from('usage_fee')
+          .select('hub (name), facility (name), reservation_person_id, time, fee')
+          .contains('date', month + '-' + day)
+          .eq('account (department_id)', department_id);
+        console.log('data: ', data);
+        // .eq('hub_id', hub_id)
+        // .eq('department_id', department_id);
+        if (error) {
+          console.info('error', error);
+          throw internalServerError(error.message);
+        }
+        if (data.length == 0) {
+          throw internalServerError();
+        }
+
+        const insertedUsageFee = data;
+
+        return { ...insertedUsageFee };
+      } catch (error) {
+        throw internalServerError(error.message);
+      }
     }),
   ),
   post(
