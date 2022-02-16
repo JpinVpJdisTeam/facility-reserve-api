@@ -31,25 +31,18 @@ export default router(
     '/api/usage_fee_month',
     jwtAuth(async (req, res) => {
       try {
-        const { month, day, department_id } = await json(req);
-        // const valid = usageFeeValidate(usageFee);
-        // if (!valid) {
-        //   const message = usageFeeValidate.errors.map((item) => item.message);
-        //   send(res, 400, { message });
-        //   return;
-        // }
-        if (month === null || day === null || department_id === null) {
-          return;
+        const { year, month, department_id } = await json(req);
+        if (year === null || month === null || department_id === null) {
+          throw internalServerError('parameter invalid.');
         }
 
-        const data = await client
+        const { data, error } = await client
           .from('usage_fee')
-          .select('hub (name), facility (name), reservation_person_id, time, fee')
-          .contains('date', month + '-' + day)
-          .eq('account (department_id)', department_id);
+          .select('date, facility(name, hub(name)), account(name), reservation_person_id, time, fee')
+          .eq('account.department_id', department_id)
+          .gte('date', year + '-' + month + '-' + '01')
+          .lte('date', year + '-' + month + '-' + '28'); // TODO 適切な末日を設定
         console.log('data: ', data);
-        // .eq('hub_id', hub_id)
-        // .eq('department_id', department_id);
         if (error) {
           console.info('error', error);
           throw internalServerError(error.message);
