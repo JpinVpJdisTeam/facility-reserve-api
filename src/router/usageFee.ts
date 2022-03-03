@@ -48,10 +48,19 @@ export default router(
           throw internalServerError(error.message);
         }
         if (data.length == 0) {
+          3;
           throw internalServerError();
         }
 
-        const insertedUsageFee = data;
+        const insertedUsageFee = {
+          "date": data[0].date,
+          "reservation_person_id": data[0].reservation_person_id,
+          "time": data[0].time,
+          "fee": data[0].fee,
+          "account_name": data[0].account.name,
+          "facility_name": data[0].facility.name,
+          "hub_name": data[0].facility.hub.name
+        }
 
         return { ...insertedUsageFee };
       } catch (error) {
