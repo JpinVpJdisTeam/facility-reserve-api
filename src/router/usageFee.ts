@@ -52,15 +52,17 @@ export default router(
           throw internalServerError();
         }
 
-        const insertedUsageFee = {
-          "date": data[0].date,
-          "reservation_person_id": data[0].reservation_person_id,
-          "time": data[0].time,
-          "fee": data[0].fee,
-          "account_name": data[0].account.name,
-          "facility_name": data[0].facility.name,
-          "hub_name": data[0].facility.hub.name
-        }
+        const insertedUsageFee = data.map((item) => {
+          return {
+            'date': item.date,
+            'reservation_person_id': item.reservation_person_id,
+            'time': item.time,
+            'fee': item.fee,
+            'account_name': item.account.name,
+            'facility_name': item.facility.name,
+            'hub_name': item.facility.hub.name,
+          };
+        });
 
         return { ...insertedUsageFee };
       } catch (error) {
