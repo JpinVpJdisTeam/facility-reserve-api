@@ -64,7 +64,7 @@ export default router(
         //   };
         // });
 
-        return { ...date };
+        return { ...data };
       } catch (error) {
         throw internalServerError(error.message);
       }
