@@ -20,13 +20,13 @@ export default router(
         .select(
           'name, hub_id, hourly_fees, reservable_timezone_start_time, reservable_timezone_end_time, continuous_avairable_time',
         )
-        .eq('id', id);
+        .eq('hub_id', id);
       if (error) {
         console.log(error);
         throw internalServerError(error.message);
       }
 
-      return { ...facility[0] };
+      return { ...facility };
     }),
   ),
   post(
