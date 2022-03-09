@@ -48,23 +48,21 @@ export default router(
           throw internalServerError(error.message);
         }
         if (data.length == 0) {
-          3;
           throw internalServerError();
         }
 
-        // const insertedUsageFee = data.map((item) => {
-        //   return {
-        //     'date': item.date,
-        //     'reservation_person_id': item.reservation_person_id,
-        //     'time': item.time,
-        //     'fee': item.fee,
-        //     'account_name': item.account.name,
-        //     'facility_name': item.facility.name,
-        //     'hub_name': item.facility.hub.name,
-        //   };
-        // });
-
-        return { ...data };
+        const insertedUsageFee = data.map((item) => {
+          return {
+            'date': item?.date,
+            'reservation_person_id': item?.reservation_person_id,
+            'time': item?.time,
+            'fee': item?.fee,
+            'account_name': item?.account?.name,
+            'facility_name': item?.facility?.name,
+            'hub_name': item?.facility?.hub?.name,
+          };
+        });
+        return { ...insertedUsageFee };
       } catch (error) {
         throw internalServerError(error.message);
       }
