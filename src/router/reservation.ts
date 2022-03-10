@@ -15,9 +15,9 @@ export default router(
     '/api/reservation-info',
     jwtAuth(async (req) => {
       const { facility_id: facilityId, usage_date: usageDate } = await json(req);
-      const { data: reservation, error } = await client
+      const { data: items, error } = await client
         .from('reservation')
-        .select('*')
+        .select('id, reservation_person_id, tel, start_time, end_time, usage_date, account(name, department(name)))')
         .eq('facility_id', facilityId)
         .eq('usage_date', usageDate);
       if (error) {
@@ -25,7 +25,20 @@ export default router(
         throw internalServerError(error.message);
       }
 
-      return { ...reservation };
+      const reservations = items.map((item) => {
+        return {
+          id: item.id,
+          reservation_person_id: item.reservation_person_id,
+          tel: item.tel,
+          start_time: item.start_time,
+          end_time: item.end_time,
+          usage_date: item.usage_date,
+          account_name: item.account.name,
+          department_name: item.account.department.name,
+        };
+      });
+
+      return { ...reservations };
     }),
   ),
   get(
