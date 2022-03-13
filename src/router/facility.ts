@@ -11,6 +11,25 @@ dotenv.config();
 const INVALID_ID = 'IDが不正です';
 
 export default router(
+  post(
+    '/api/facility-info',
+    jwtAuth(async (req) => {
+      try {
+        const { hub_id: hubId } = await json(req);
+        const { data, error } = await client.from('facility').select('*').eq('hub_id', hubId);
+        if (error) {
+          console.info('error', error);
+          throw internalServerError(error.message);
+        }
+        if (data.length < 0) {
+          return {};
+        }
+        return { ...data };
+      } catch (error) {
+        throw internalServerError(error.message);
+      }
+    }),
+  ),
   get(
     '/api/facility/:id',
     jwtAuth(async (req) => {
