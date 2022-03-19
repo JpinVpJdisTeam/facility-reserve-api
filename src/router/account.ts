@@ -6,6 +6,7 @@ import { internalServerError } from '../error';
 import { jwtAuth } from '../utils';
 import { validate } from '../utils/validation';
 import dotenv from 'dotenv';
+import role from './role';
 dotenv.config();
 
 const INVALID_ID = 'IDが不正です';
@@ -29,13 +30,32 @@ export default router(
   get(
     '/api/account',
     jwtAuth(async (req) => {
-      const { data: account, error } = await client.from('account').select('*');
+      const { data: account, error } = await client
+        .from('account')
+        .select('id, name, furigana, hub(name), department(name), employee_id, role(name), email, tel');
       if (error) {
         console.log(error);
         throw internalServerError(error.message);
       }
+      if (account.length <= 0) {
+        console.log('データが存在しません');
+        return {};
+      }
+      const tidiedAccounts = account.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          furigana: item.furigana,
+          hub_name: item.hub.name,
+          department_name: item.department.name,
+          employee_id: item.employee_id,
+          role_name: item.role.name,
+          email: item.email,
+          tel: item.tel,
+        };
+      });
 
-      return { ...account };
+      return { ...tidiedAccounts };
     }),
   ),
   post(
