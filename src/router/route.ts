@@ -8,6 +8,7 @@ import facilityRouter from './facility';
 import reservationRouter from './reservation';
 import departmentRouter from './department';
 import usageFeeRouter from './usageFee';
+import roleRouter from './role';
 
 const cors = microCors();
 
@@ -21,5 +22,6 @@ export const route = cors(
     reservationRouter,
     departmentRouter,
     usageFeeRouter,
+    roleRouter,
   ),
 );

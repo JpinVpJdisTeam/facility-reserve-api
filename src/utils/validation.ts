@@ -239,8 +239,26 @@ const usageFeeSchema = {
   },
 };
 
+const roleSchema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      description: '役割名',
+    },
+  },
+  required: ['name'],
+  additionalProperties: false,
+  errorMessage: {
+    required: {
+      name: '役割名は必須です',
+    },
+  },
+};
+
 export const validate = ajv.compile(accountSchema);
 export const facilityValidate = ajv.compile(facilitySchema);
 export const reservationValidate = ajv.compile(reservationSchema);
 export const departmentValidate = ajv.compile(departmentSchema);
 export const usageFeeValidate = ajv.compile(usageFeeSchema);
+export const roleValidate = ajv.compile(roleSchema);
